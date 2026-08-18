@@ -9,3 +9,9 @@ __pycache__/
 *.pyc
 .venv/
 venv/
+
+# Prisma-generated agent reference docs (regenerate via `prisma init`)
+.agents/
+.claude/
+.windsurf/
+skills-lock.json

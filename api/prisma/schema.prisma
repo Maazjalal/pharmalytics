@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ClientStatus {
+  paid
+  due
+}
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  clientsCreated Client[] @relation("ClientCreatedBy")
+
+  @@map("users")
+}
+
+model Client {
+  id         String       @id @default(uuid())
+  clientCode String       @unique @map("client_code")
+  name       String
+  status     ClientStatus @default(due)
+  createdAt  DateTime     @default(now()) @map("created_at")
+  createdBy  String       @map("created_by")
+
+  creator            User                @relation("ClientCreatedBy", fields: [createdBy], references: [id])
+  clientMedications  ClientMedication[]
+
+  @@map("clients")
+}
+
+model Medication {
+  id           String @id @default(uuid())
+  name         String
+  defaultPrice Decimal @map("default_price") @db.Decimal(10, 2)
+
+  clientMedications ClientMedication[]
+
+  @@map("medications")
+}
+
+model ClientMedication {
+  id               String    @id @default(uuid())
+  clientId         String    @map("client_id")
+  medicationId     String    @map("medication_id")
+  price            Decimal   @db.Decimal(10, 2)
+  dosage           Decimal   @db.Decimal(10, 2)
+  dosageUnit       String    @map("dosage_unit")
+  prescriptionDate DateTime  @map("prescription_date") @db.Date
+  dateAdded        DateTime  @default(now()) @map("date_added")
+
+  client     Client     @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  medication Medication @relation(fields: [medicationId], references: [id])
+
+  @@map("client_medications")
+}
