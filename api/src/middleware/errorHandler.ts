@@ -3,13 +3,18 @@ import { ZodError } from "zod";
 import { MulterError } from "multer";
 import { Prisma } from "../generated/prisma/client.js";
 import { InvalidFileTypeError } from "../lib/uploads.js";
+import { TemplateRenderError } from "../lib/docxMerge.js";
 
 export function errorHandler(err: unknown, _req: Request, res: Response, _next: NextFunction) {
   if (err instanceof ZodError) {
     return res.status(400).json({ error: "Validation failed", details: err.flatten() });
   }
 
-  if (err instanceof InvalidFileTypeError || err instanceof MulterError) {
+  if (
+    err instanceof InvalidFileTypeError ||
+    err instanceof MulterError ||
+    err instanceof TemplateRenderError
+  ) {
     return res.status(400).json({ error: err.message });
   }
 

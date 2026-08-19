@@ -40,3 +40,9 @@ export interface ClientDetail extends Client {
   clientMedications: ClientMedication[];
   total: number;
 }
+
+export interface PdfTemplate {
+  id: string;
+  originalName: string;
+  uploadedAt: string;
+}

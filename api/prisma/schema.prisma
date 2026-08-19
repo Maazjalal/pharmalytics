@@ -67,3 +67,13 @@ model ClientMedication {
 
   @@map("client_medications")
 }
+
+// Single global template used to build a per-client PDF. Enforced as a
+// singleton in application code (uploading a new one replaces the old row).
+model PdfTemplate {
+  id           String   @id @default(uuid())
+  originalName String   @map("original_name")
+  uploadedAt   DateTime @default(now()) @map("uploaded_at")
+
+  @@map("pdf_template")
+}

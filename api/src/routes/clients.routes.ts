@@ -3,6 +3,17 @@ import { Router } from "express";
 import { z } from "zod";
 import { prisma } from "../lib/prisma.js";
 import { attachmentPath, uploadAttachment } from "../lib/uploads.js";
+import { TEMPLATE_PATH } from "../lib/pdfTemplate.js";
+import { fillTemplate } from "../lib/docxMerge.js";
+import { convertDocxToPdf } from "../lib/libreoffice.js";
+
+function formatDate(date: Date): string {
+  return date.toLocaleDateString("en-US");
+}
+
+function formatMoney(value: unknown): string {
+  return `$${Number(value).toFixed(2)}`;
+}
 
 const router = Router();
 
@@ -149,6 +160,51 @@ router.delete("/:id/attachment", async (req, res) => {
   });
 
   res.json(updated);
+});
+
+router.post("/:id/build-pdf", async (req, res) => {
+  const template = await prisma.pdfTemplate.findFirst();
+  if (!template) {
+    return res.status(404).json({ error: "No PDF template has been uploaded yet" });
+  }
+
+  const client = await prisma.client.findUniqueOrThrow({
+    where: { id: req.params.id },
+    include: {
+      clientMedications: {
+        include: { medication: true },
+        orderBy: { dateAdded: "desc" },
+      },
+    },
+  });
+
+  const total = client.clientMedications.reduce((sum, cm) => sum + Number(cm.price), 0);
+
+  const templateBuffer = await fs.readFile(TEMPLATE_PATH);
+  const filledDocx = fillTemplate(templateBuffer, {
+    CLIENT_NAME: client.name,
+    CLIENT_CODE: client.clientCode,
+    CLIENT_STATUS: client.status === "settled" ? "Settled" : "Treatment",
+    SERVICE_DATE: formatDate(client.createdAt),
+    TOTAL: formatMoney(total),
+    TODAY: formatDate(new Date()),
+    medications: client.clientMedications.map((cm) => ({
+      medication_name: cm.medication.name,
+      dosage: cm.dosage.toString(),
+      dosage_unit: cm.dosageUnit,
+      prescription_date: formatDate(cm.prescriptionDate),
+      price: formatMoney(cm.price),
+    })),
+  });
+
+  const pdfBuffer = await convertDocxToPdf(filledDocx);
+
+  res.setHeader("Content-Type", "application/pdf");
+  res.setHeader(
+    "Content-Disposition",
+    `inline; filename="${client.clientCode}.pdf"`,
+  );
+  res.send(pdfBuffer);
 });
 
 router.post("/:id/medications", async (req, res) => {

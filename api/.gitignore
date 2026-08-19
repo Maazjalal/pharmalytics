@@ -6,3 +6,6 @@ node_modules
 
 # Uploaded client attachments (local dev storage)
 /uploads
+
+# Uploaded PDF build template (local dev storage)
+/templates

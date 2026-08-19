@@ -6,6 +6,7 @@ import { api } from "@/lib/api";
 import type { ClientDetail, ClientStatus, Medication } from "@/types/api";
 import { StatusBadge } from "@/components/StatusBadge";
 import { AttachmentControl } from "@/components/AttachmentControl";
+import { BuildPdfSection } from "@/components/BuildPdfSection";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -283,6 +284,8 @@ export function ClientDetailPage() {
           </TableBody>
         </Table>
       </div>
+
+      <BuildPdfSection clientId={client.id} />
     </div>
   );
 }

@@ -4,6 +4,7 @@ import authRoutes from "./routes/auth.routes.js";
 import clientsRoutes from "./routes/clients.routes.js";
 import medicationsRoutes from "./routes/medications.routes.js";
 import clientMedicationsRoutes from "./routes/clientMedications.routes.js";
+import pdfTemplateRoutes from "./routes/pdfTemplate.routes.js";
 import { requireAuth } from "./middleware/auth.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 
@@ -18,5 +19,6 @@ app.use("/api/auth", authRoutes);
 app.use("/api/clients", requireAuth, clientsRoutes);
 app.use("/api/medications", requireAuth, medicationsRoutes);
 app.use("/api/client-medications", requireAuth, clientMedicationsRoutes);
+app.use("/api/pdf-template", requireAuth, pdfTemplateRoutes);
 
 app.use(errorHandler);
