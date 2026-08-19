@@ -9,8 +9,19 @@ async function nextClientCode(): Promise<string> {
   return `CLT-${String(count + 1).padStart(4, "0")}`;
 }
 
-router.get("/", async (_req, res) => {
+const listQuerySchema = z.object({
+  archived: z.enum(["true", "false"]).optional(),
+  search: z.string().trim().min(1).optional(),
+});
+
+router.get("/", async (req, res) => {
+  const { archived, search } = listQuerySchema.parse(req.query);
+
   const clients = await prisma.client.findMany({
+    where: {
+      ...(archived !== undefined && { archived: archived === "true" }),
+      ...(search && { name: { contains: search, mode: "insensitive" } }),
+    },
     orderBy: { createdAt: "desc" },
   });
   res.json(clients);
@@ -51,7 +62,7 @@ router.get("/:id", async (req, res) => {
 });
 
 const statusSchema = z.object({
-  status: z.enum(["paid", "due"]),
+  status: z.enum(["treatment", "settled"]),
 });
 
 router.patch("/:id/status", async (req, res) => {
@@ -59,6 +70,19 @@ router.patch("/:id/status", async (req, res) => {
   const client = await prisma.client.update({
     where: { id: req.params.id },
     data: { status },
+  });
+  res.json(client);
+});
+
+const archiveSchema = z.object({
+  archived: z.boolean(),
+});
+
+router.patch("/:id/archive", async (req, res) => {
+  const { archived } = archiveSchema.parse(req.body);
+  const client = await prisma.client.update({
+    where: { id: req.params.id },
+    data: { archived },
   });
   res.json(client);
 });

@@ -8,8 +8,8 @@ datasource db {
 }
 
 enum ClientStatus {
-  paid
-  due
+  treatment
+  settled
 }
 
 model User {
@@ -28,7 +28,8 @@ model Client {
   id         String       @id @default(uuid())
   clientCode String       @unique @map("client_code")
   name       String
-  status     ClientStatus @default(due)
+  status     ClientStatus @default(treatment)
+  archived   Boolean      @default(false)
   createdAt  DateTime     @default(now()) @map("created_at")
   createdBy  String       @map("created_by")
 

@@ -13,19 +13,19 @@
   --font-heading: "Space Grotesk Variable", sans-serif;
   --font-mono: "IBM Plex Mono", monospace;
 
-  /* Brand tokens, from the approved demo prototype */
-  --color-bg: #f6f7f5;
+  /* Brand tokens — white / off-white / brown / beige */
+  --color-bg: #f7f2e9;
   --color-surface: #ffffff;
-  --color-ink: #1c2321;
-  --color-ink-soft: #5b655f;
-  --color-hairline: #e2e5e1;
-  --color-brand: #2f6f62;
-  --color-brand-light: #e4f0ec;
-  --color-brand-dark: #1e4a40;
-  --color-due: #b4592a;
-  --color-due-light: #fbebe1;
-  --color-paid: #2f6f62;
-  --color-paid-light: #e4f0ec;
+  --color-ink: #2e2118;
+  --color-ink-soft: #7a6a58;
+  --color-hairline: #e6dcc8;
+  --color-brand: #6b4423;
+  --color-brand-light: #efe3d0;
+  --color-brand-dark: #4a2e15;
+  --color-due: #b0672e;
+  --color-due-light: #f5e6d3;
+  --color-paid: #6b4423;
+  --color-paid-light: #efe3d0;
 }
 
 /* shadcn/ui semantic tokens, mapped onto the brand palette above so

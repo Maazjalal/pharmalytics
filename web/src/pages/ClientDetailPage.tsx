@@ -72,6 +72,16 @@ export function ClientDetailPage() {
     onError: () => toast.error("Could not update status"),
   });
 
+  const setArchived = useMutation({
+    mutationFn: (archived: boolean) =>
+      api(`/clients/${id}/archive`, { method: "PATCH", body: JSON.stringify({ archived }) }),
+    onSuccess: (_, archived) => {
+      invalidate();
+      toast.success(archived ? "Client archived" : "Client unarchived");
+    },
+    onError: () => toast.error("Could not update archive status"),
+  });
+
   const attachMedication = useMutation({
     mutationFn: () =>
       api(`/clients/${id}/medications`, {
@@ -129,19 +139,28 @@ export function ClientDetailPage() {
           <h2 className="text-2xl text-foreground">{client.name}</h2>
         </div>
         <div className="flex items-center gap-3">
-          <StatusBadge status={client.status} />
-          <Select
-            value={client.status}
-            onValueChange={(status: ClientStatus) => updateStatus.mutate(status)}
+          {client.archived && <StatusBadge status={client.status} />}
+          {!client.archived && (
+            <Select
+              value={client.status}
+              onValueChange={(status: ClientStatus) => updateStatus.mutate(status)}
+            >
+              <SelectTrigger size="sm" className="w-[130px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="treatment">Treatment</SelectItem>
+                <SelectItem value="settled">Settled</SelectItem>
+              </SelectContent>
+            </Select>
+          )}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setArchived.mutate(!client.archived)}
           >
-            <SelectTrigger size="sm" className="w-[110px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="due">Due</SelectItem>
-              <SelectItem value="paid">Paid</SelectItem>
-            </SelectContent>
-          </Select>
+            {client.archived ? "Unarchive" : "Archive"}
+          </Button>
         </div>
       </div>
 

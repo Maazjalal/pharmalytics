@@ -1,4 +1,4 @@
-export type ClientStatus = "paid" | "due";
+export type ClientStatus = "treatment" | "settled";
 
 export interface User {
   id: string;
@@ -11,6 +11,7 @@ export interface Client {
   clientCode: string;
   name: string;
   status: ClientStatus;
+  archived: boolean;
   createdAt: string;
   createdBy: string;
 }
