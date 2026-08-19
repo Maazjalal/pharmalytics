@@ -21,13 +21,16 @@ export class ApiError extends Error {
   }
 }
 
-export async function api<T>(path: string, init?: RequestInit): Promise<T> {
+async function request(path: string, init?: RequestInit): Promise<Response> {
   const token = getToken();
+  const isFormData = init?.body instanceof FormData;
 
   const res = await fetch(`/api${path}`, {
     ...init,
     headers: {
-      "Content-Type": "application/json",
+      // FormData sets its own multipart Content-Type (with boundary) —
+      // setting it manually here would drop that boundary.
+      ...(isFormData ? {} : { "Content-Type": "application/json" }),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...init?.headers,
     },
@@ -44,9 +47,20 @@ export async function api<T>(path: string, init?: RequestInit): Promise<T> {
     throw new ApiError(res.status, body.error ?? "Request failed");
   }
 
+  return res;
+}
+
+export async function api<T>(path: string, init?: RequestInit): Promise<T> {
+  const res = await request(path, init);
+
   if (res.status === 204) {
     return undefined as T;
   }
 
   return res.json();
+}
+
+export async function fetchBlob(path: string): Promise<Blob> {
+  const res = await request(path);
+  return res.blob();
 }

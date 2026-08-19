@@ -1,10 +1,16 @@
 import type { NextFunction, Request, Response } from "express";
 import { ZodError } from "zod";
+import { MulterError } from "multer";
 import { Prisma } from "../generated/prisma/client.js";
+import { InvalidFileTypeError } from "../lib/uploads.js";
 
 export function errorHandler(err: unknown, _req: Request, res: Response, _next: NextFunction) {
   if (err instanceof ZodError) {
     return res.status(400).json({ error: "Validation failed", details: err.flatten() });
+  }
+
+  if (err instanceof InvalidFileTypeError || err instanceof MulterError) {
+    return res.status(400).json({ error: err.message });
   }
 
   if (err instanceof Prisma.PrismaClientKnownRequestError) {

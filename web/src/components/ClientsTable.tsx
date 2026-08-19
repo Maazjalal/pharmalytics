@@ -44,7 +44,7 @@ export function ClientsTable({
           <TableRow>
             <TableHead className="uppercase tracking-wide">Client ID</TableHead>
             <TableHead className="uppercase tracking-wide">Name</TableHead>
-            <TableHead className="uppercase tracking-wide">Date Created</TableHead>
+            <TableHead className="uppercase tracking-wide">Service Date</TableHead>
             <TableHead className="uppercase tracking-wide">Status</TableHead>
             <TableHead />
           </TableRow>

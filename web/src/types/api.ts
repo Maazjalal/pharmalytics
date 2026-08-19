@@ -14,6 +14,8 @@ export interface Client {
   archived: boolean;
   createdAt: string;
   createdBy: string;
+  attachmentOriginalName: string | null;
+  attachmentUploadedAt: string | null;
 }
 
 export interface Medication {

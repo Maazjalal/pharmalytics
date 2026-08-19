@@ -33,6 +33,9 @@ model Client {
   createdAt  DateTime     @default(now()) @map("created_at")
   createdBy  String       @map("created_by")
 
+  attachmentOriginalName String?   @map("attachment_original_name")
+  attachmentUploadedAt   DateTime? @map("attachment_uploaded_at")
+
   creator            User                @relation("ClientCreatedBy", fields: [createdBy], references: [id])
   clientMedications  ClientMedication[]
 

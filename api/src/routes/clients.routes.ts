@@ -1,6 +1,8 @@
+import fs from "node:fs/promises";
 import { Router } from "express";
 import { z } from "zod";
 import { prisma } from "../lib/prisma.js";
+import { attachmentPath, uploadAttachment } from "../lib/uploads.js";
 
 const router = Router();
 
@@ -98,6 +100,55 @@ const addMedicationSchema = z.object({
   dosageUnit: z.string().min(1),
   prescriptionDate: z.coerce.date(),
   price: z.number().positive().optional(),
+});
+
+router.post("/:id/attachment", uploadAttachment.single("file"), async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: "No PDF file provided" });
+  }
+
+  const clientId = String(req.params.id);
+  const client = await prisma.client.findUniqueOrThrow({ where: { id: clientId } });
+
+  await fs.writeFile(attachmentPath(client.id), req.file.buffer);
+
+  const updated = await prisma.client.update({
+    where: { id: client.id },
+    data: {
+      attachmentOriginalName: req.file.originalname,
+      attachmentUploadedAt: new Date(),
+    },
+  });
+
+  res.status(201).json(updated);
+});
+
+router.get("/:id/attachment", async (req, res) => {
+  const client = await prisma.client.findUniqueOrThrow({ where: { id: req.params.id } });
+
+  if (!client.attachmentOriginalName) {
+    return res.status(404).json({ error: "No attachment for this client" });
+  }
+
+  res.setHeader("Content-Type", "application/pdf");
+  res.setHeader(
+    "Content-Disposition",
+    `inline; filename="${client.attachmentOriginalName.replace(/"/g, "")}"`,
+  );
+  res.sendFile(attachmentPath(client.id));
+});
+
+router.delete("/:id/attachment", async (req, res) => {
+  const client = await prisma.client.findUniqueOrThrow({ where: { id: req.params.id } });
+
+  await fs.rm(attachmentPath(client.id), { force: true });
+
+  const updated = await prisma.client.update({
+    where: { id: client.id },
+    data: { attachmentOriginalName: null, attachmentUploadedAt: null },
+  });
+
+  res.json(updated);
 });
 
 router.post("/:id/medications", async (req, res) => {

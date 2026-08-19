@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { api } from "@/lib/api";
 import type { ClientDetail, ClientStatus, Medication } from "@/types/api";
 import { StatusBadge } from "@/components/StatusBadge";
+import { AttachmentControl } from "@/components/AttachmentControl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -154,6 +155,7 @@ export function ClientDetailPage() {
               </SelectContent>
             </Select>
           )}
+          <AttachmentControl clientId={client.id} attachmentName={client.attachmentOriginalName} />
           <Button
             variant="outline"
             size="sm"
