@@ -1,0 +1,80 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/space-grotesk";
+@import "@fontsource/ibm-plex-mono/400.css";
+@import "@fontsource/ibm-plex-mono/500.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --font-sans: "Inter Variable", sans-serif;
+  --font-heading: "Space Grotesk Variable", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+
+  /* Brand tokens, from the approved demo prototype */
+  --color-bg: #f6f7f5;
+  --color-surface: #ffffff;
+  --color-ink: #1c2321;
+  --color-ink-soft: #5b655f;
+  --color-hairline: #e2e5e1;
+  --color-brand: #2f6f62;
+  --color-brand-light: #e4f0ec;
+  --color-brand-dark: #1e4a40;
+  --color-due: #b4592a;
+  --color-due-light: #fbebe1;
+  --color-paid: #2f6f62;
+  --color-paid-light: #e4f0ec;
+}
+
+/* shadcn/ui semantic tokens, mapped onto the brand palette above so
+   generated components (Button, Card, Input, ...) match it by default. */
+@theme inline {
+  --color-background: var(--color-bg);
+  --color-foreground: var(--color-ink);
+  --color-card: var(--color-surface);
+  --color-card-foreground: var(--color-ink);
+  --color-popover: var(--color-surface);
+  --color-popover-foreground: var(--color-ink);
+  --color-primary: var(--color-brand);
+  --color-primary-foreground: var(--color-surface);
+  --color-secondary: var(--color-surface);
+  --color-secondary-foreground: var(--color-ink);
+  --color-muted: var(--color-bg);
+  --color-muted-foreground: var(--color-ink-soft);
+  --color-accent: var(--color-brand-light);
+  --color-accent-foreground: var(--color-brand-dark);
+  --color-destructive: #c4432e;
+  --color-border: var(--color-hairline);
+  --color-input: var(--color-hairline);
+  --color-ring: var(--color-brand);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+}
+
+:root {
+  --radius: 0.5rem;
+}
+
+body {
+  font-family: var(--font-sans);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
